@@ -23,23 +23,28 @@ function download_csv(csv, filename) {
     // CSV FILE
     csvFile = new Blob([csv], {type: "text/csv"});
 
-    // Download link
-    downloadLink = document.createElement("a");
+    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveOrOpenBlob(csvFile, filename);
+    }
+    else {
+	    // Download link
+	    downloadLink = document.createElement("a");
 
-    // File name
-    downloadLink.download = filename;
+	    // File name
+	    downloadLink.download = filename;
 
-    // We have to create a link to the file
-    downloadLink.href = window.URL.createObjectURL(csvFile);
+	    // We have to create a link to the file
+	    downloadLink.href = window.URL.createObjectURL(csvFile);
 
-    // Make sure that the link is not displayed
-    downloadLink.style.display = "none";
+	    // Make sure that the link is not displayed
+	    downloadLink.style.display = "none";
 
-    // Add the link to your DOM
-    document.body.appendChild(downloadLink);
+	    // Add the link to your DOM
+	    document.body.appendChild(downloadLink);
 
-    // Lanzamos
-    downloadLink.click();
+	    // Lanzamos
+	    downloadLink.click();
+    }
 }
 
 function export_table_to_csv(subform, filename) {
@@ -50,7 +55,7 @@ function export_table_to_csv(subform, filename) {
 		var row = [], cols = rows[i].querySelectorAll("td, th");
 		
         for (var j = 0; j < cols.length; j++) 
-            row.push(cols[j].innerText);
+            row.push('"' + cols[j].innerText.trim() + '"');
         
 		csv.push(row.join(","));		
 	}
